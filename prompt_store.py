@@ -3,6 +3,7 @@ Include numerical insights of statistics and metadata also in your analysis. At 
 The answer must detail with in-depth insights, and include only the core conclusion. Also, it have to be written by only based on fact, eliminating opinions. Please verify these things yourself before answering.
 """
 agentic_prompt = """You are a site reliability engineer. An incident ticket of unknown causes has been declared on a cloud system for which you are responsible and you are tasked with resolving it.
+
 The analytical report below presents observational insights for each performance metric collected from the VM involved in the incident.
 Based on the analytical report, please identify what failure most likely to be the root cause of the incident is and suggest how should we response it.
 When considering the basis for a diagnosis, if there is a historical predicted failure marked as incorrect in the metric on which it is based, the failure can not be regarded a root cause failure. And the identification of the root cause failure should done as a presenting its name in final.
