@@ -69,6 +69,49 @@ for failure_name, symptoms in tqdm(keyword_sheet.items(), total=len(keyword_shee
                         else:
                             q_ids[api_site_parameter] = [q_id]
 
+                if not pages[0]:
+                    target_ids = {x: ';'.join(y) for x,y in q_ids.items()}
+                else:
+                    target_ids = {x: ';'.join(y) for x,y in q_ids.items() if len(y) == 10}
+                for site, ids in target_ids.items():
+                    params = {
+                        'order': 'desc',
+                        'sort': 'activity',
+                        'site': site,
+                        'filter': 'withbody'
+                    }
+                    try:
+                        response = requests.get(f'https://api.stackexchange.com/2.3/questions/{ids}',
+                                                params=params).json()['items']
+                    except KeyError:
+                        continue
+
+                    questions = {str(x['question_id']): '**' + x['title'] + '**<br>' + x['body']
+                                 for x in response if x['is_answered']}
+                    ids = ';'.join(questions.keys())
+
+                    params = {
+                        'order': 'desc',
+                        'sort': 'activity',
+                        'site': site,
+                        'filter': 'withbody'
+                    }
+                    try:
+                        response = requests.get(f'https://api.stackexchange.com/2.3/questions/{ids}/answers',
+                                                params=params).json()['items']
+                    except KeyError:
+                        continue
+
+                    posts = []
+                    for question_id, question in questions.items():
+                        posts.append({'question': question,
+                                      'answer': [{'score': x['score'], 'body': x['body']}
+                                                 for x in response if x['question_id'] == int(question_id)]})
+
+                    del q_ids[site]
+
+                    total_passage.extend(posts)
+
                 for submission in reddit.info(fullnames=c_ids):
                     submission.comments.replace_more(limit=1)
                     total_passage.append({
